@@ -1,0 +1,11 @@
+[workspace]
+
+members = [
+  "crates/aa_get_started",
+  "crates/connect",
+  "crates/echo",
+  "crates/tinyhttp",
+  # chat 
+  "crates/hello_tokio",
+  "crates/sample_1",
+]
