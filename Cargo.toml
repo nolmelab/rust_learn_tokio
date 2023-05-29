@@ -4,8 +4,8 @@ members = [
   "crates/aa_get_started",
   "crates/connect",
   "crates/echo",
+  "crates/tcp_json",
+  "crates/tcp_flex",
+  "crates/ensure",
   "crates/tinyhttp",
-  # chat 
-  "crates/hello_tokio",
-  "crates/sample_1",
 ]
