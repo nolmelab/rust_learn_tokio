@@ -8,4 +8,5 @@ members = [
   "crates/tcp_flex",
   "crates/ensure",
   "crates/tinyhttp",
+  "crates/tokio_tutorial",
 ]
