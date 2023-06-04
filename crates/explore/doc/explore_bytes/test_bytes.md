@@ -90,7 +90,7 @@ C++로 코딩할 때 라이브러리를 진정으로 다 이해하고 코딩한 
   - 트레이트 간의 관계 
   - 다른 구조화의 방법들 
 
-## E1. 문서 읽기 
+## E1. 모듈 문서 
 
 ### Module::Memory Layout 
 
@@ -113,6 +113,73 @@ C++로 코딩할 때 라이브러리를 진정으로 다 이해하고 코딩한 
   비슷하다. 
 
 - backing storage의 예시로 static memory와 Arc<[u8]>을 얘기한다. 
+  - Arc<[u8]>을 어떻게 만드는지 확인하기위해 test_arc.rs 탐색을 했다. 
+    - Arc를 보면서 PhantomData에 대해 한번 더 보았다. 여전히 노미콘을 이해해야  하는 
+      문제가 남았고 4일 연휴 동안 봐야겠다. 
+
+## E3. pub 메서드, trait
+
+methods:
+
+```rust
+- impl Bytes: 
+  - pub const fn new() -> Self
+  - pub fn new() -> Self 
+  - pub const fn from_static(bytes : &'static [u8]) -> Self
+  - pub fn from_static(bytes : &'static [u8]) -> Self
+  - pub const fn len() -> usize
+  - pub const fn is_empty() -> bool
+  - pub fn copy_from_slice(data: &[u8]) -> Self
+  - pub fn slice(&self, range : impl RangeBounds<usize>) -> Self 
+  - pub fn slice_ref(&self, subset: &[u8]) -> Self
+  - pub fn split_off(&mut seff, at: usize) -> Self
+  - pub fn split_to(&mut self, at : usize) -> Self 
+  - pub fn truncate(&mut self, len: usize) 
+  - pub fn clear(&mut self) 
+```
+
+traits:
+
+```rust
+- impl Buf for Bytes:
+  - remaining()
+  - chunk()
+  - advance()
+  - copy_to_bytes()
+```
+
+```rust
+- Default 
+- From<&'static [u8]>
+- From<&'static str>
+- From<Vec<u8>>
+- From<Box<[u8]>>
+- From<String>
+- From<Bytes> for Vec<u8>
+- 
+```
+
+Bytes는 Buf이며 연속된 메모리에 대한 Slice와 비슷하여 Slice / Vec / Box에서 
+생성하고 쪼개기가 가능하다. 
+
+## E4. pub struct와 내부 구현 
+
+- VTable 기법
+  - 이 쪽은 보기 좀 어렵다. 도전 과제로 남겨둔다. 
+  - vtable 자체는 함수 포인터 지정이라 어렵지 않다. 
+  - clone() 등의 내부 구현이 어렵다. 
+
+- PartialEq, PartialOrd 
+  - 많은 타잎 특수화에 대한 구현이 있다. 
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,9 +1,11 @@
-use bytes::{Bytes, BytesMut, Buf, BufMut};
 
 #[cfg(test)]
 mod test {
-    #[test]
-    fn test_bytes_usage() {
+    use bytes::{Bytes, BytesMut, Buf, BufMut};
 
+    #[test]
+    fn test_bytes_from_static() {
+        let b = Bytes::from_static(b"hello");
+        assert_eq!(&b[..], b"hello");
     }
 }
