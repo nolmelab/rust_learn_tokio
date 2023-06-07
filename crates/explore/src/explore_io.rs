@@ -2,4 +2,4 @@
 
 mod test_reader;
 mod test_cursor;
-mod test_ioslice;
+mod test_io;

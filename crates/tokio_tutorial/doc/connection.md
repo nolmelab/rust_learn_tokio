@@ -84,6 +84,11 @@ Cursor<T>, BytesMut, ReadBuf 등 많은 코드들이 연관된다.
 Frame::parse(), Frame::check(), get_line(), get_decimal() 등의 함수가 핵심이다. 
 parse()는 Cursor와 BytesMut를 사용하여 처리한다. 
 
+## read_frame() 함수 
+
+이 함수가 처리의 핵심이다. Frame과 ReadBuf를 사용하여 처리한다. 
+이 점이 기묘하면서 재미있는 부분이다. 
+
 
 
 

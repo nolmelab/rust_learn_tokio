@@ -27,3 +27,7 @@ mini-redis = "0.4"
 [[bin]]
 name="client"
 path="src/redis_client.rs"
+
+[[bin]]
+name="frame"
+path="src/frame.rs"
