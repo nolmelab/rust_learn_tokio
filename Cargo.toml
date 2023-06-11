@@ -7,7 +7,7 @@ members = [
   "crates/tcp_json",
   "crates/tcp_flex",
   "crates/ensure",
-  "crates/tinyhttp",
+  "crates/minihttp",
   "crates/tokio_tutorial",
   "crates/explore",
 ]
