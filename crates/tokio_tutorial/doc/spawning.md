@@ -381,9 +381,79 @@ async fn process(socket: TcpStream) {
 
 위의 코드를 사용하여 들어오는 명령을 처리하고 응답을 보내는 기능을 구현할 수 있습니다.
 
+## task::spawn() 내부 
 
+task/spawn.rs 파일 
 
+- scheduler::spawn(task, id) 호출 
+  - multi_thread::handle::spawn() 호출
+  
+multi_thread::Handle 
+```rust
+pub(crate) struct Handle {
+    /// Task spawner
+    pub(super) shared: worker::Shared,
 
+    /// Resource driver handles
+    pub(crate) driver: driver::Handle,
+
+    /// Blocking pool spawner
+    pub(crate) blocking_spawner: blocking::Spawner,
+
+    /// Current random number generator seed
+    pub(crate) seed_generator: RngSeedGenerator,
+}
+```
+
+worker::Shared가 중요하다. 
+
+owned.bind() 함수로 task를 추가한다. 
+
+task::new_task()에서 RawTask, Task, Notified, JoinHandle을 만든다. 
+
+RawTask는 NonNull<Header>를 갖고 NonNull은 Clone, Copy이다. 따라서, RawTask도 그런 것으로 
+보인다. 여러 곳에서 보관한다. 
+
+NonNull이 Copy이면 어떻게 복제되는가? 메모리는 그대로 공유하는 형태로 복제한다. 
+포인터 위치만 유지하면서 복사한다는 뜻이다. 따라서, 실제 메모리는 전체가 공유한다. 
+
+복잡하지만 핵심 흐름을 몇 가지 잡으면 괜찮을 듯 하다. 
+
+- runtime 
+  - Scheduler
+  - Task / RawTask 
+- driver 
+- clock 
+
+챗지피티의 설명이다.
+
+- 이벤트 루프 초기화: Tokio에서 Runtime 인스턴스를 생성하면 이벤트 루프가 초기화되고 실행기(executor) 및 리액터(reactor)와 같은 필요한 구성 요소가 설정됩니다.
+
+- 태스크 생성: 비동기 코드를 실행하려면 tokio::spawn을 사용하여 이벤트 루프에 태스크를 생성합니다. 이는 새로운 태스크를 생성하고 실행을 위해 이벤트 루프에 등록합니다.
+
+- 태스크 폴링: 이벤트 루프는 태스크의 상태를 지속적으로 폴링하여 진행 가능 여부를 결정합니다. 각 태스크에 대해 poll 메서드를 호출합니다.
+
+- Future 실행: 이벤트 루프가 태스크를 폴링할 때, 태스크에 연결된 퓨처의 poll 메서드를 호출합니다. 여기서 퓨처의 로직이 실행됩니다.
+
+- Future 진행: 퓨처의 poll 메서드는 퓨처가 아직 완료되지 않았을 경우 Poll::Pending을 반환합니다. 결과가 있는 경우 Poll::Ready(result)을 반환합니다.
+
+- 제어 양보: 퓨처가 Poll::Pending을 반환하면 이는 제어를 이벤트 루프에 다시 양보해야 함을 나타냅니다. 이벤트 루프는 퓨처가 준비되었을 때 향후 폴링을 위해 퓨처를 스케줄링합니다.
+
+- 논블로킹 I/O: 퓨처가 I/O 작업을 수행할 때에는 일반적으로 tokio::net이나 tokio::fs와 같은 Tokio의 비동기 I/O 기능을 사용합니다. 이러한 I/O 작업은 논블로킹이며, 리액터를 통해 운영 체제와 상호 작용합니다.
+
+- 리액터 상호 작용: 퓨처가 I/O 작업을 시작하면 해당 작업을 리액터에게 전달하여 운영 체제와의 상호 작용을 관리합니다. 리액터는 비동기 시스템 호출을 사용하고, 작업이 준비되면 이벤트 루프에게 알립니다.
+
+- 이벤트 알림: I/O 작업이 완료되거나 다른 이벤트(예: 타이머 만료)가 발생하면 리액터가 이벤트 루프에게 알립니다. 이는 연결된 태스크가 폴링 가능한 상태임을 나타냅니다.
+
+- 태스크 재개: 태스크가 이벤트 루프로부터 알림을 받으면 이전에 양보한 지점에서 실행을 재개합니다. 이벤트 루프는 태스크의 퓨처의 poll 메서드를 다시 호출합니다.
+
+- Future 완료: 퓨처가 폴링 중에 Poll::Ready(result)를 반환하면 이는 퓨처가 결과와 함께 완료되었음을 나타냅니다. 태스크가 완료되었으며, 이벤트 루프는 다음 태스크로 진행할 수 있습니다.
+
+- 태스크 정리: 태스크가 완료되면 이벤트 루프는 필요한 정리 작업을 수행합니다. 예를 들어 태스크와 관련된 리소스를 해제합니다.
+
+- 이러한 플로우는 모든 태스크가 완료되거나 명시적으로 취소를 요청할 때까지 반복됩니다.
+
+참고로, 이는 단순화된 개요이며, Tokio의 내부 구현에는 추가적인 최적화와 세부 사항이 포함됩니다. 그러나 이를 통해 이벤트 루프가 Tokio에서 퓨처의 실행을 어떻게 구동하는지에 대한 대략적인 이해를 얻을 수 있습니다.
 
 
 

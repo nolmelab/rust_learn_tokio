@@ -29,5 +29,7 @@ stream은 TcpStream이고 AsyncReadExt를 구현한다. ReadBuf가 Future이고 
 frame.rs에서 +에 대한 단위 테스트를 parse()에 대해 구현했다. 
 이와 같이 직접 구현해야 실력이 는다. 
 
+## ReadBuf의 Future 동작 
+
 
 

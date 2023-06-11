@@ -2,8 +2,11 @@ use mini_redis::Frame;
 use std::io::Cursor;
 
 fn main() {
-  // Cursor를 만들고 parse로 결과를 확인한다. 
-  // 좋은 연습이다. 
+  learn_parse_frame();
+}
+
+// Cursor를 만들고 parse로 결과를 확인한다. 
+fn learn_parse_frame() {
 
   let mut frames = Vec::<u8>::new();
 
@@ -27,4 +30,5 @@ fn main() {
   if let Ok(frame) = result {
     println!("Parsed a frame: {}", frame);
   }
+
 }
