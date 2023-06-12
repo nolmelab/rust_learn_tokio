@@ -30,8 +30,8 @@ name="tcp-json-client"
 path="src/tcp_json_client.rs"
 
 [[bin]]
-name="playground"
-path="src/playground.rs"
+name="tcp-json-frame"
+path="src/tcp_json_frame.rs"
 
 
 
